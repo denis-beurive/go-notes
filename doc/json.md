@@ -236,7 +236,7 @@ dict[a]:   1
 
 ## Serialization
 
-We serialize a "structure" into "_serialized output text_".
+We serialize a "structure" into a "_serialized output text_".
 
 ### Using "nul"
 
@@ -312,6 +312,10 @@ Result:
 ### Do not dump a field if it has a "zero value"
 
 "Zero values" differ depending on the type of the variables. For a string, it is "". For an integer, it is 0...
+
+You may want to exclude a key from the serialized output text if it has the "zero value" (associated with its type).
+
+> Please note that this technique, like the previous one, allow to differentiate between the presence and the absence of a key (within the structure being serialized).
 
 ```go
 package main
