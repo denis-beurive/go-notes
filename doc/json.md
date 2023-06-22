@@ -2,7 +2,16 @@
 
 ## Deserialization
 
+We deserialize a "_serialized input text_" into a "_target structure_".
+
 ### Basic example
+
+As you can see with this example:
+
+* If a key is absent from the serialized input text, then the value of the corresponding key in the target structure is not affected by the deserialization process. The value of the corresponding key in the target structure is whatever was set before the call to the function `json.Unmarshal`.
+* If the serialized input text represents a structure with a key that does not belong to the target structure, then this (extra) key is just ignored during the deserialization process.
+
+Simply put, the function `json.Unmarshal` maps _what it finds_ from the given serialized input text to the target structure. Extra keys, _whether from the serialized input text, or within the target structure_, are just ignored.
 
 ```go
 package main
@@ -46,6 +55,22 @@ func main() {
 	var data Data
 
 	// All fields are defined
+	//
+	// {
+	//   "dict": {
+	//     "b": 2,
+	//     "a": 1
+	//   },
+	//   "string": "this is a string",
+	//   "nul": null,
+	//   "integer": 10,
+	//   "array": [
+	//     10,
+	//     20,
+	//     30
+	//   ]
+	// }
+
 	json_text = `{"dict":{"b":2,"a":1},"string":"this is a string","nul":null,"integer":10,"array":[10,20,30]}`
 	data.Reset()
 	if err = json.Unmarshal([]byte(json_text), &data); nil != err {
@@ -55,8 +80,25 @@ func main() {
 	data.Dump()
 
 	// One field is not defined: "string"
-	// In this case, after the JSON deserialization, the value of the undefined field is whatever was set before the deserialization. 
-	// In other words, if a field is not set in the input, then its value is not affected by the execution of the function "json.Unmarshal".
+	//
+	// {
+	//   "dict": {
+	//     "b": 2,
+	//     "a": 1
+	//   },
+	//   "nul": null,
+	//   "integer": 10,
+	//   "array": [
+	//     10,
+	//     20,
+	//     30
+	//   ]
+	// }
+	//
+	// In this case, after the JSON deserialization, the value of the undefined field is whatever was set 
+	// *before* the deserialization. In other words, if a field is not set in the input, then its value is 
+	// not affected by the execution of the function "json.Unmarshal".
+
 	json_text = `{"dict":{"b":2,"a":1},"nul":null,"integer":10,"array":[10,20,30]}`
 	data.Reset()
 	if err = json.Unmarshal([]byte(json_text), &data); nil != err {
@@ -91,8 +133,11 @@ dict[a]:   1
 
 ### Nul values
 
-Sometimes, instead of a default value, you want fields to be assigned to the "`nil`" value.
-This way, you can make the difference between the absence of value and a value which happens to have the "default value" (_even though, in this case, one could argue that there is no default value_).
+Sometimes, you want a key (within the target structure) to be assigned the value `nil`, if no corresponding key was found within the "_serialized input text_".
+
+This way, you can make the difference between the absence and the presence of a key within the "_serialized input text_" (_even though, `nil` is a value_).
+
+In order to achieve this goal, we declare the value of the key as being a pointer which value is (pre)set to `nil` (prior to calling `json.Unmarshal`). The function `json.Unmarshal` properly handles the fact that the value is a pointer.
 
 ```go
 package main
@@ -191,7 +236,11 @@ dict[a]:   1
 
 ## Serialization
 
+We serialize a "structure" into "_serialized output text_".
+
 ### Using "nul"
+
+If you want to safely differentiate between the absence and the presence of a key's value, then you can declare the key's value as being a pointer. If no value is assigned for the key in the structure, then the corresponding value within the "serialized output text" will be `nul`. Otherwise, a (typed) value is assigned.
 
 ```go
 package main
