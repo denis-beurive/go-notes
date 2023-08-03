@@ -4,3 +4,4 @@
 * [File](doc/file.md)
 * [Runes / UTF-8](doc/runes.md)
 * [Flags: parsing the command line](doc/flags.md)
+* [Integers to binary and vice versa](doc/binary.md)
