@@ -2,6 +2,8 @@
 
 ## Slurp a file that contains text
 
+The hard way, just for fun:
+
 ```go
 package main
 
@@ -58,3 +60,6 @@ func main() {
 	fmt.Printf("Content:\n\n[%s]\n\n", *text)
 }
 ```
+
+The easy way: use `os.ReadFile()` ([example](https://gobyexample.com/reading-files))
+
